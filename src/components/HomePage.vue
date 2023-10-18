@@ -32,6 +32,7 @@ export default {
     }
 
     const register = () => {
+      router.push('/register');
       console.log('Registrarse');
     }
 
