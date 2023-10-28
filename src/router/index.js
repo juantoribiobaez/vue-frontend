@@ -7,25 +7,32 @@ import RegisterPage from '../views/RegisterPage.vue'
 
 const routes = [
   {
-    path: '/',
-    name: 'HomePage',
+    path: '/home',
+    name: 'home',
     component: HomePage
   },
   {
     path: '/login',
-    name: 'LoginPage',
+    name: 'login',
     component: LoginPage
   },
   {
     path: '/register',
-    name: 'RegisterPage',
+    name: 'register',
     component: RegisterPage
   }
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(''),
   routes
 })
+
+/*const router = createRouter({
+  history: createWebHistory(process.env.BASE_URL),
+  routes
+})*/
+
+//console.log(router.currentRoute.value);
 
 export default router

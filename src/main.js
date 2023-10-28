@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import App from './components/HomePage.vue'
-import router from './router' // Importa el router
+import App from './App.vue' // Importando App.vue
+import router from './router'
 
-createApp(App).use(router).mount('#app') // Usa el router en tu aplicación
+createApp(App).use(router).mount('#app')

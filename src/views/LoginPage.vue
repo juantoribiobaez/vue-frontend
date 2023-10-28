@@ -47,54 +47,69 @@
   
   <style scoped>
   .login-container {
-    max-width: 400px;
-    margin: 0 auto;
+    max-width: 500px;
+    margin: 50px auto;
     padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background: #f8f8f8;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
   .title {
     text-align: center;
-    font-size: 24px;
+    font-size: 28px;
     margin-bottom: 20px;
+    color: #333333;
+    font-weight: bold;
   }
   
   h2 {
-    font-size: 20px;
+    font-size: 22px;
+    margin-bottom: 20px;
+    color: #555555;
   }
   
   .form-group {
-    margin: 10px 0;
+    margin: 15px 0;
   }
   
   label {
     font-size: 16px;
+    color: #666666;
+    display: block;
+    margin-bottom: 10px;
   }
   
   input {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     font-size: 16px;
-    border: 1px solid #ccc;
+    border: 1px solid #cccccc;
     border-radius: 5px;
     outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+  }
+  
+  input:focus {
+    border-color: #007BFF;
   }
   
   button {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     font-size: 16px;
     background: #007BFF;
-    color: #fff;
+    color: #ffffff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s;
   }
   
   button:hover {
     background: #0056b3;
   }
   </style>
+  
