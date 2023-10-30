@@ -1,233 +1,219 @@
-
-<!-- src/views/Home.vue -->
-
-<!-- src/views/Home.vue -->
-
 <template>
-  <div class="home">
-    <h1>Welcome to Phantom App</h1>
-    
-    <div v-if="!loggedIn">
-      <h2 v-if="!registering">Iniciar Sesión</h2>
-      <h2 v-else>Registrarse</h2>
-      <form @submit.prevent="registering ? register : login">
-        <div class="form-group">
-          <label for="username">Nombre de Usuario:</label>
-          <input type="text" id="username" v-model="username" required>
-        </div>
-        <div class="form-group">
-          <label for="password">Contraseña:</label>
-          <input type="password" id="password" v-model="password" required>
-        </div>
-        <div class="form-group" v-if="registering">
-          <label for="confirmPassword">Confirmar Contraseña:</label>
-          <input type="password" id="confirmPassword" v-model="confirmPassword" required>
-        </div>
-        <div class="form-group">
-          <button type="submit">{{ registering ? 'Registrarse' : 'Entrar' }}</button>
-        </div>
-      </form>
-      
-      <!-- Botón de cambio entre registro e inicio de sesión -->
-      <button @click="toggleRegistering" class="toggle-button">
-        {{ registering ? '¿Ya tienes una cuenta? Inicia sesión' : '¿No tienes una cuenta? Regístrate' }}
-      </button>
+	<div class="home">
+		<h1>Welcome to Phantom App</h1>
 
-      <!-- Mensaje de error -->
-      <div v-if="loginError" class="error-message">
-        {{ loginError }}
-      </div>
-    </div>
+		<div class="login-container">
+			<h2>{{ registering ? 'Registrarse' : 'Iniciar Sesión' }}</h2>
+			<form @submit.prevent="handleSubmit">
+				<div class="form-group">
+					<label for="username">Nombre de Usuario:</label>
+					<input type="text" id="username" v-model="formData.username" required>
+				</div>
+				<div class="form-group">
+					<label for="password">Contraseña:</label>
+					<input type="password" id="password" v-model="formData.password" required>
+				</div>
+				<div class="form-group" v-if="registering">
+					<label for="confirmPassword">Confirmar Contraseña:</label>
+					<input type="password" id="confirmPassword" v-model="formData.confirmPassword" required>
+				</div>
+				<div class="form-group">
+					<button type="submit">{{ registering ? 'Registrarse' : 'Entrar' }}</button>
+				</div>
+			</form>
 
-    <div v-else>
-      <h2>¡Bienvenido, {{ username }}!</h2>
-      <button @click="logout">Cerrar Sesión</button>
-    </div>
-  </div>
+			<button @click="toggleRegistering" class="toggle-button">
+				{{ registering ? '¿Ya tienes una cuenta? Inicia sesión' : '¿No tienes una cuenta? Regístrate' }}
+			</button>
+
+			<div v-if="loginError" class="error-message">
+				{{ loginError }}
+			</div>
+		</div>
+	</div>
 </template>
-
+  
 <script>
 import axios from 'axios';
 import { ref } from 'vue';
 
 export default {
-  name: 'HomePage',
-  setup() {
-    const username = ref('');
-    const password = ref('');
-    const confirmPassword = ref('');
-    const loggedIn = ref(false);
-    const loginError = ref(null);
-    const registering = ref(false);
+	name: 'HomePage',
+	setup() {
+		const formData = ref({
+			username: '',
+			password: '',
+			confirmPassword: ''
+		});
+		const loginError = ref(null);
+		const registering = ref(false);
 
-    const login = async () => {
-      try {
-        const data = {
-          username: username.value,
-          password: password.value,
-        };
-        const response = await axios.post('http://localhost:8001/api/login', data);
-        console.log('Respuesta del servidor:', response.data);
-        if (response.data.success) {
-          loggedIn.value = true;
-          loginError.value = null;
-        } else {
-          loginError.value = "Usuario o contraseña incorrectos";
-        }
-      } catch (error) {
-        console.error('Error al iniciar sesión:', error);
-        loginError.value = "Ocurrió un error al intentar iniciar sesión";
-      }
-    };
+		const handleLogin = async () => {
+			try {
+				const response = await axios.post('http://localhost:8001/api/login',
+					{
+						username: formData.value.username,
+						password: formData.value.password,
+					}, {
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				});
+				if (response.data.token) {
+					// La solicitud fue exitosa, y response.data.token contiene el token de autenticación
+					// Almacena el token en localStorage o donde prefieras
+					localStorage.setItem('token', response.data.token);
 
-    const register = async () => {
-      if (password.value !== confirmPassword.value) {
-        loginError.value = "Las contraseñas no coinciden";
-        return;
-      }
-      try {
-        const data = {
-          username: username.value,
-          password: password.value,
-        };
-        const response = await axios.post('http://localhost:8001/api/register', data);
-        console.log('Respuesta del servidor:', response.data);
-        if (response.data.success) {
-          loginError.value = null;
-          registering.value = false;
-        } else {
-          loginError.value = response.data.message || "Ocurrió un error al intentar registrar el usuario";
-        }
-      } catch (error) {
-        console.error('Error al registrar usuario:', error);
-        loginError.value = "Ocurrió un error al intentar registrar el usuario";
-      }
-    };
+					// Resto de tu lógica después del inicio de sesión exitoso
+				} else {
+					loginError.value = "Usuario o contraseña incorrectos";
+				}
+			} catch (error) {
+				console.error('Error:', error);
+				loginError.value = "Ocurrió un error al intentar iniciar sesión";
+			}
+		};
 
-    const logout = () => {
-      username.value = '';
-      password.value = '';
-      confirmPassword.value = '';
-      loggedIn.value = false;
-      registering.value = false;
-    };
 
-    const toggleRegistering = () => {
-      registering.value = !registering.value;
-      loginError.value = null;
-    };
+		const handleRegister = async () => {
+			// Tu lógica para crear un usuario
+		};
 
-    return {
-      username,
-      password,
-      confirmPassword,
-      loggedIn,
-      login,
-      register,
-      logout,
-      loginError,
-      registering,
-      toggleRegistering
-    };
-  }
+		const handleSubmit = () => {
+			if (registering.value) {
+				handleRegister();
+			} else {
+				handleLogin();
+			}
+		};
+
+		const toggleRegistering = () => {
+			registering.value = !registering.value;
+			loginError.value = null;
+		};
+
+		return {
+			formData,
+			loginError,
+			registering,
+			handleSubmit,
+			toggleRegistering
+		};
+	}
 };
 </script>
-
+ 
 <style scoped>
 .home {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background: linear-gradient(to right, #6dd5fa, #2980b9);
-  color: #fff;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  padding: 20px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 85vh;
+	background: linear-gradient(to right, #74b9ff, #0984e3);
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	padding: 20px;
+	text-align: center;
 }
 
 h1 {
-  font-size: 3em;
-  margin-bottom: 30px;
-  font-weight: 700;
-  color: #ffffff;
-  text-align: center;
+	font-size: 2.5em;
+	margin-bottom: 20px;
+	font-weight: 700;
+	color: #ffffff;
+}
+
+.login-container {
+	background: #fff;
+	border-radius: 15px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+	padding: 25px;
+	max-width: 400px;
+	width: 100%;
+	text-align: left;
+	color: #333;
 }
 
 .form-group {
-  margin-bottom: 15px;
+	margin-bottom: 20px;
+	display: flex;
+	flex-direction: column;
 }
 
 label {
-  display: block;
-  margin-bottom: 5px;
+	margin-bottom: 10px;
+	font-size: 1.1em;
+	color: #555;
 }
 
 input {
-  width: 100%;
-  padding: 10px;
-  box-sizing: border-box;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  transition: border-color 0.3s;
+	width: 100%;
+	padding: 12px;
+	box-sizing: border-box;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	transition: border-color 0.3s;
+	font-size: 1em;
 }
 
 input:focus {
-  outline: none;
-  border-color: #007BFF;
+	outline: none;
+	border-color: #777;
 }
 
 button {
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  font-weight: 500;
-  transition: background-color 0.3s, transform 0.3s;
-  background-color: #ffffff;
-  color: #007BFF;
-  border: 1px solid #007BFF;
+	padding: 12px 20px;
+	border: none;
+	cursor: pointer;
+	border-radius: 8px;
+	font-weight: 500;
+	transition: background-color 0.3s, transform 0.3s;
+	background-color: #3498db;
+	color: #ffffff;
+	font-size: 1em;
 }
 
 button:hover {
-  transform: translateY(-3px);
-  background-color: #007BFF;
-  color: #ffffff;
+	transform: translateY(-2px);
+	background-color: #2980b9;
 }
 
 button:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+	outline: none;
 }
+
 .error-message {
-  margin-top: 20px;
-  padding: 10px;
-  border: 1px solid #e74c3c;
-  color: #e74c3c;
-  border-radius: 5px;
-  text-align: center;
+	margin-top: 20px;
+	padding: 10px;
+	border: 1px solid #d9534f;
+	color: #d9534f;
+	border-radius: 8px;
+	text-align: center;
+	font-size: 1em;
 }
 
 @media (max-width: 600px) {
-  .home {
-    padding: 20px;
-  }
+	.home {
+		padding: 20px;
+	}
 
-  h1 {
-    font-size: 2em;
-  }
+	h1 {
+		font-size: 2em;
+	}
 }
 
 .toggle-button {
-  margin-top: 15px;
-  background-color: transparent;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  transition: text-decoration 0.3s;
+	margin-top: 15px;
+	background-color: transparent;
+	color: #000000;
+	border: none;
+	cursor: pointer;
+	transition: text-decoration 0.3s;
+	font-size: 1em;
 }
 
 .toggle-button:hover {
-  text-decoration: underline;
+	text-decoration: underline;
+	color: #ffffff
 }
 </style>
