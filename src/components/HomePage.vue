@@ -50,20 +50,21 @@ export default {
 
 		const handleLogin = async () => {
 			try {
-				const response = await axios.post('http://localhost:8001/api/login',
-					{
-						username: formData.value.username,
-						password: formData.value.password,
-					}, {
+				const response = await axios.post('http://localhost:8001/api/login', {
+					username: formData.value.username,
+					password: formData.value.password,
+				}, {
 					headers: {
 						'Content-Type': 'application/json',
 					},
 				});
 				if (response.data.token) {
-					// La solicitud fue exitosa, y response.data.token contiene el token de autenticación
-					// Almacena el token en localStorage o donde prefieras
+					// Almacena el token en localStorage
+					console.log(response.data.token);
 					localStorage.setItem('token', response.data.token);
-
+					// Limpia los datos confidenciales
+					formData.value.password = '';
+					formData.value.confirmPassword = '';
 					// Resto de tu lógica después del inicio de sesión exitoso
 				} else {
 					loginError.value = "Usuario o contraseña incorrectos";
@@ -74,9 +75,36 @@ export default {
 			}
 		};
 
-
 		const handleRegister = async () => {
-			// Tu lógica para crear un usuario
+			if (formData.value.password !== formData.value.confirmPassword) {
+				loginError.value = "Las contraseñas no coinciden";
+				return;
+			}
+
+			try {
+				const response = await axios.post('http://localhost:8001/api/register', {
+					username: formData.value.username,
+					password: formData.value.password,
+					confirmPassword: formData.value.confirmPassword
+				}, {
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				});
+				if (response.data.token) {
+					// Almacena el token en localStorage
+					localStorage.setItem('token', response.data.token);
+					// Limpia los datos confidenciales
+					formData.value.password = '';
+					formData.value.confirmPassword = '';
+					// Resto de tu lógica después de la creación exitosa del usuario
+				} else {
+					loginError.value = "Error al crear el usuario";
+				}
+			} catch (error) {
+				console.error('Error:', error);
+				loginError.value = "Ocurrió un error al intentar registrarse";
+			}
 		};
 
 		const handleSubmit = () => {
@@ -90,6 +118,9 @@ export default {
 		const toggleRegistering = () => {
 			registering.value = !registering.value;
 			loginError.value = null;
+			// Limpia los datos confidenciales
+			formData.value.password = '';
+			formData.value.confirmPassword = '';
 		};
 
 		return {
