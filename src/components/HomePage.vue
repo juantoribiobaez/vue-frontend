@@ -60,7 +60,7 @@ export default {
 				});
 				if (response.data.token) {
 					// Almacena el token en localStorage
-					console.log(response.data.token);
+					//console.log(response.data.token);
 					localStorage.setItem('token', response.data.token);
 					// Limpia los datos confidenciales
 					formData.value.password = '';
